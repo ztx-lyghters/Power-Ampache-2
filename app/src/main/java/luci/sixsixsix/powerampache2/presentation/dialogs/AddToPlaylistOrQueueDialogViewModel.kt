@@ -63,7 +63,14 @@ class AddToPlaylistOrQueueDialogViewModel @Inject constructor(
     val playlistsStateFlow: StateFlow<List<Playlist>> =
         playlistsFlow().filterNotNull().distinctUntilChanged()
             .combine(userFlowUseCase().filterNotNull().distinctUntilChanged()) { playlists, user ->
-                playlists.filter { it.owner?.lowercase() == user.username.lowercase() }
+                val username = user.username.lowercase()
+                if (user.access < 100) {
+                    playlists.filter { it.owner?.lowercase() == username }
+                } else {
+                    playlists.filter { it.owner?.lowercase() == username } +
+                        playlists.filter { it.owner?.lowercase() == "system" } +
+                        playlists.filter { it.owner?.lowercase() !in setOf(username, "system") }
+                }
             }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), listOf())
 
     fun onEvent(event: AddToPlaylistOrQueueDialogEvent) {
