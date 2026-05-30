@@ -136,6 +136,8 @@ fun QueueScreenContent(
                         }
                         SongItemEvent.DOWNLOAD_SONG ->
                             mainViewModel.onEvent(MainEvent.OnDownloadSong(song))
+                        SongItemEvent.DELETE_DOWNLOADED_SONG ->
+                            mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(song))
                         SongItemEvent.EXPORT_DOWNLOADED_SONG ->
                             mainViewModel.onEvent(MainEvent.OnExportDownloadedSong(song))
                         SongItemEvent.GO_TO_ALBUM ->

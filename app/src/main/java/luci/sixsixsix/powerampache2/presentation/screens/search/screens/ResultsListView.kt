@@ -131,6 +131,8 @@ private fun onSongItemEvent(
             onSongEvent(MainEvent.OnShareSong(song))
         SongItemEvent.DOWNLOAD_SONG ->
             onSongEvent(MainEvent.OnDownloadSong(song))
+        SongItemEvent.DELETE_DOWNLOADED_SONG ->
+            onSongEvent(MainEvent.OnDownloadedSongDelete(song))
         SongItemEvent.EXPORT_DOWNLOADED_SONG ->
             onSongEvent(MainEvent.OnExportDownloadedSong(song))
         SongItemEvent.GO_TO_ALBUM ->

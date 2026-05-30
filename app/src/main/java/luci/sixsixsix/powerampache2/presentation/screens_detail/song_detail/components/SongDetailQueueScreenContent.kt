@@ -132,11 +132,15 @@ fun SongDetailQueueScreenContent(
                 song = song,
                 songItemEventListener = { event ->
                     when(event) {
-                        SongItemEvent.PLAY_NEXT -> mainViewModel.onEvent(MainEvent.OnAddSongToQueueNext(song))
+                        SongItemEvent.PLAY_NEXT ->
+                            mainViewModel.onEvent(MainEvent.OnAddSongToQueueNext(song))
                         SongItemEvent.SHARE_SONG -> {
                             songToShare = song
                         }
-                        SongItemEvent.DOWNLOAD_SONG -> mainViewModel.onEvent(MainEvent.OnDownloadSong(song))
+                        SongItemEvent.DOWNLOAD_SONG ->
+                            mainViewModel.onEvent(MainEvent.OnDownloadSong(song))
+                        SongItemEvent.DELETE_DOWNLOADED_SONG ->
+                            mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(song))
                         SongItemEvent.GO_TO_ALBUM -> {
                             Ampache2NavGraphs.navigateToAlbum(albumId = song.album.id)
                             scope.launch {
@@ -149,7 +153,8 @@ fun SongDetailQueueScreenContent(
                                 mainScaffoldState.bottomSheetState.partialExpand()
                             }
                         }
-                        SongItemEvent.ADD_SONG_TO_QUEUE -> mainViewModel.onEvent(MainEvent.OnAddSongToQueue(song))
+                        SongItemEvent.ADD_SONG_TO_QUEUE ->
+                            mainViewModel.onEvent(MainEvent.OnAddSongToQueue(song))
                         SongItemEvent.ADD_SONG_TO_PLAYLIST ->
                             playlistsDialogOpen = AddToPlaylistOrQueueDialogOpen(true, listOf(song))
                         SongItemEvent.EXPORT_DOWNLOADED_SONG ->
