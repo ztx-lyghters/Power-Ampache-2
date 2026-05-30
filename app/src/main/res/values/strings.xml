@@ -198,6 +198,7 @@
     <string name="dropdownMenu_item_goToAlbum">Go to Album</string>
     <string name="dropdownMenu_item_goToArtist">Go to Artist</string>
     <string name="dropdownMenu_item_share">Share</string>
+    <string name="dropdownMenu_item_delete">Delete From Downloads</string>
 
     <!---...-->
     <string name="about_flavour">Flavor</string>
