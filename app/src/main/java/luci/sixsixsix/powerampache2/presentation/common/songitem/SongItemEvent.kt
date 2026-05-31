@@ -31,4 +31,5 @@ enum class SongItemEvent {
     ADD_SONG_TO_QUEUE,
     ADD_SONG_TO_PLAYLIST,
     DELETE_DOWNLOADED_SONG,
+    SHOW_INFO,
 }

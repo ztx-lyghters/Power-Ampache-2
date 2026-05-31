@@ -88,6 +88,8 @@ import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDia
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialogViewModel
 import luci.sixsixsix.powerampache2.presentation.dialogs.EraseConfirmDialog
 import luci.sixsixsix.powerampache2.presentation.dialogs.ShareDialog
+import luci.sixsixsix.powerampache2.presentation.dialogs.info.InfoDialogSong
+import luci.sixsixsix.powerampache2.presentation.dialogs.info.ShowInfoDialogOpen
 import luci.sixsixsix.powerampache2.presentation.navigation.Ampache2NavGraphs
 import luci.sixsixsix.powerampache2.presentation.navigation.Ampache2NavGraphs.navigateToArtist
 import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainEvent
@@ -199,6 +201,13 @@ fun PlaylistDetailScreen(
                     songToShare = null
                 }
             )
+        }
+    }
+    
+    var showSongInfoDialog by remember { mutableStateOf(ShowInfoDialogOpen(false)) }
+    if (showSongInfoDialog.isOpen && showSongInfoDialog.song != null) {
+        InfoDialogSong(showSongInfoDialog.song!!, showSongInfoDialog.songPlugin) {
+            showSongInfoDialog = ShowInfoDialogOpen(false)
         }
     }
 
@@ -392,6 +401,9 @@ fun PlaylistDetailScreen(
                                                 mainViewModel.onEvent(MainEvent.OnDownloadSong(song))
                                             SongItemEvent.DELETE_DOWNLOADED_SONG ->
                                                 mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(song))
+                                            SongItemEvent.SHOW_INFO ->
+                                                showSongInfoDialog = ShowInfoDialogOpen(
+                                                    isOpen = true, song = song)
                                             SongItemEvent.EXPORT_DOWNLOADED_SONG ->
                                                 mainViewModel.onEvent(MainEvent.OnExportDownloadedSong(song))
                                             SongItemEvent.GO_TO_ALBUM ->

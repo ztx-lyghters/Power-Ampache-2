@@ -38,11 +38,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import luci.sixsixsix.powerampache2.domain.models.Song
 import luci.sixsixsix.powerampache2.presentation.destinations.AlbumDetailScreenDestination
 import luci.sixsixsix.powerampache2.presentation.destinations.PlaylistDetailScreenDestination
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialog
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialogOpen
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialogViewModel
+import luci.sixsixsix.powerampache2.presentation.dialogs.info.InfoDialogSong
+import luci.sixsixsix.powerampache2.presentation.dialogs.info.ShowInfoDialogOpen
 import luci.sixsixsix.powerampache2.presentation.navigation.Ampache2NavGraphs
 import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainEvent
 import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainViewModel
@@ -87,6 +90,13 @@ fun SearchResultsScreen(
         }
     }
 
+    var showSongInfoDialog by remember { mutableStateOf(ShowInfoDialogOpen(false)) }
+    if (showSongInfoDialog.isOpen && showSongInfoDialog.song != null) {
+        InfoDialogSong(showSongInfoDialog.song!!, showSongInfoDialog.songPlugin) {
+            showSongInfoDialog = ShowInfoDialogOpen(false)
+        }
+    }
+
     if (searchState.isNoSearch) {
         AnimatedVisibility(visible = searchState.selectedGenre == null) {
             GenresScreen(
@@ -128,6 +138,9 @@ fun SearchResultsScreen(
             },
             onOpenPlaylistDialog = {
                 playlistsDialogOpen = AddToPlaylistOrQueueDialogOpen(true, it)
+            },
+            onShowSongInfo = {
+                showSongInfoDialog = ShowInfoDialogOpen(true, it)
             }
         )
     }

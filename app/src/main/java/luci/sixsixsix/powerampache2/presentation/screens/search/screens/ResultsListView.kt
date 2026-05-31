@@ -61,7 +61,8 @@ fun ResultsListView(
     onArtistSelected: (artistId: String, artist: Artist?) -> Unit,
     onPlaylistSelected: (Playlist) -> Unit,
     onSongEvent: (MainEvent) -> Unit,
-    onOpenPlaylistDialog: (List<Song>) -> Unit
+    onOpenPlaylistDialog: (List<Song>) -> Unit,
+    onShowSongInfo: (Song) -> Unit
 ) {
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
 
@@ -94,7 +95,8 @@ fun ResultsListView(
                                 onSongEvent,
                                 onAlbumSelected,
                                 onArtistSelected,
-                                onOpenPlaylistDialog
+                                onOpenPlaylistDialog,
+                                onShowSongInfo
                             )
                         },
                         modifier = Modifier
@@ -122,7 +124,8 @@ private fun onSongItemEvent(
     onSongEvent: (MainEvent) -> Unit,
     onAlbumSelected: (albumId: String, album: Album?) -> Unit,
     onArtistSelected: (artistId: String, artist: Artist?) -> Unit,
-    onOpenPlaylistDialog: (List<Song>) -> Unit
+    onOpenPlaylistDialog: (List<Song>) -> Unit,
+    onShowSongInfo: (Song) -> Unit
 ) {
     when(event) {
         SongItemEvent.PLAY_NEXT ->
@@ -133,6 +136,8 @@ private fun onSongItemEvent(
             onSongEvent(MainEvent.OnDownloadSong(song))
         SongItemEvent.DELETE_DOWNLOADED_SONG ->
             onSongEvent(MainEvent.OnDownloadedSongDelete(song))
+        SongItemEvent.SHOW_INFO ->
+            onShowSongInfo(song)
         SongItemEvent.EXPORT_DOWNLOADED_SONG ->
             onSongEvent(MainEvent.OnExportDownloadedSong(song))
         SongItemEvent.GO_TO_ALBUM ->

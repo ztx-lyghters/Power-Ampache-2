@@ -78,6 +78,8 @@ import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDia
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialogViewModel
 import luci.sixsixsix.powerampache2.presentation.dialogs.EraseConfirmDialog
 import luci.sixsixsix.powerampache2.presentation.dialogs.ShareDialog
+import luci.sixsixsix.powerampache2.presentation.dialogs.info.InfoDialogSong
+import luci.sixsixsix.powerampache2.presentation.dialogs.info.ShowInfoDialogOpen
 import luci.sixsixsix.powerampache2.presentation.navigation.Ampache2NavGraphs
 import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainEvent
 import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainViewModel
@@ -261,6 +263,13 @@ fun OfflineSongsMainContent(
 
     }
 
+    var showSongInfoDialog by remember { mutableStateOf(ShowInfoDialogOpen(false)) }
+    if (showSongInfoDialog.isOpen && showSongInfoDialog.song != null) {
+        InfoDialogSong(showSongInfoDialog.song!!, showSongInfoDialog.songPlugin) {
+            showSongInfoDialog = ShowInfoDialogOpen(false)
+        }
+    }
+
     Box(modifier = modifier) {
         if (state.isLoading && state.songs.isEmpty()) {
             LoadingScreen()
@@ -284,6 +293,8 @@ fun OfflineSongsMainContent(
                             SongItemEvent.DOWNLOAD_SONG -> { } // DO NOTHING
                             SongItemEvent.DELETE_DOWNLOADED_SONG ->
                                 mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(song))
+                            SongItemEvent.SHOW_INFO ->
+                                showSongInfoDialog = ShowInfoDialogOpen(isOpen = true, song = song)
                             SongItemEvent.EXPORT_DOWNLOADED_SONG ->
                                 mainViewModel.onEvent(MainEvent.OnExportDownloadedSong(song))
                             SongItemEvent.GO_TO_ALBUM -> navigator?.navigate(
