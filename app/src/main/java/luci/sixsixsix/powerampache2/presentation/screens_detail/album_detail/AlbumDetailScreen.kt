@@ -78,6 +78,8 @@ import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDia
 import luci.sixsixsix.powerampache2.presentation.dialogs.EraseConfirmDialog
 import luci.sixsixsix.powerampache2.presentation.dialogs.info.InfoDialogAlbum
 import luci.sixsixsix.powerampache2.presentation.dialogs.ShareDialog
+import luci.sixsixsix.powerampache2.presentation.dialogs.info.InfoDialogSong
+import luci.sixsixsix.powerampache2.presentation.dialogs.info.ShowInfoDialogOpen
 import luci.sixsixsix.powerampache2.presentation.navigation.Ampache2NavGraphs
 import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainEvent
 import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainViewModel
@@ -140,6 +142,13 @@ fun AlbumDetailScreen(
             )
         }
 
+    }
+
+    var showSongInfoDialog by remember { mutableStateOf(ShowInfoDialogOpen(false)) }
+    if (showSongInfoDialog.isOpen && showSongInfoDialog.song != null) {
+        InfoDialogSong(showSongInfoDialog.song!!, showSongInfoDialog.songPlugin) {
+            showSongInfoDialog = ShowInfoDialogOpen(false)
+        }
     }
 
     val isLandscape = when (orientation) {
@@ -360,6 +369,8 @@ fun AlbumDetailScreen(
                                                 mainViewModel.onEvent(MainEvent.OnDownloadSong(song))
                                             SongItemEvent.DELETE_DOWNLOADED_SONG ->
                                                 mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(song))
+                                            SongItemEvent.SHOW_INFO ->
+                                                showSongInfoDialog = ShowInfoDialogOpen(isOpen = true, song = song)
                                             SongItemEvent.EXPORT_DOWNLOADED_SONG ->
                                                 mainViewModel.onEvent(MainEvent.OnExportDownloadedSong(song))
                                             SongItemEvent.GO_TO_ALBUM -> { } // No ACTION, we're already in this album //navigator.navigate(AlbumDetailScreenDestination(viewModel.state.album.id, viewModel.state.album))
