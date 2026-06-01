@@ -95,18 +95,20 @@ fun SearchResultsScreen(
     }
 
     var showDeleteFromDownloadsDialog by remember { mutableStateOf(ShowEraseConfirmDialog(false)) }
-    if (showDeleteFromDownloadsDialog.isOpen && showDeleteFromDownloadsDialog.song != null) {
-        EraseConfirmDialog(
-            onDismissRequest = {
-                showDeleteFromDownloadsDialog = ShowEraseConfirmDialog(false)
-            },
-            onConfirmation = {
-                showDeleteFromDownloadsDialog = ShowEraseConfirmDialog(false)
-                mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(showDeleteFromDownloadsDialog.song!!))
-            },
-            dialogTitle = stringResource(id = R.string.warning_song_remove_downloaded_title),
-            dialogText = "Delete ${showDeleteFromDownloadsDialog.song!!.name} from downloads?"
-        )
+    if (showDeleteFromDownloadsDialog.isOpen) {
+        showDeleteFromDownloadsDialog.song?.let { songToRemove ->
+            EraseConfirmDialog(
+                onDismissRequest = {
+                    showDeleteFromDownloadsDialog = ShowEraseConfirmDialog(false, null)
+                },
+                onConfirmation = {
+                    showDeleteFromDownloadsDialog = ShowEraseConfirmDialog(false, null)
+                    mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(songToRemove))
+                },
+                dialogTitle = stringResource(id = R.string.warning_song_remove_downloaded_title),
+                dialogText = "Delete ${songToRemove.name} from downloads?"
+            )
+        }
     }
 
     var showSongInfoDialog by remember { mutableStateOf(ShowInfoDialogOpen(false)) }

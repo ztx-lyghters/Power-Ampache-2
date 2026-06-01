@@ -220,9 +220,11 @@ fun PlaylistDetailScreen(
     }
     
     var showSongInfoDialog by remember { mutableStateOf(ShowInfoDialogOpen(false)) }
-    if (showSongInfoDialog.isOpen && showSongInfoDialog.song != null) {
-        InfoDialogSong(showSongInfoDialog.song!!, showSongInfoDialog.songPlugin) {
-            showSongInfoDialog = ShowInfoDialogOpen(false)
+    if (showSongInfoDialog.isOpen) {
+        showSongInfoDialog.song?.let { songToShow ->
+            InfoDialogSong(songToShow, showSongInfoDialog.songPlugin) {
+                showSongInfoDialog = ShowInfoDialogOpen(false, null)
+            }
         }
     }
 
