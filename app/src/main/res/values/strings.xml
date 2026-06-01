@@ -186,6 +186,7 @@
     <string name="warning_playlist_adding_stay">Stay</string>
     <string name="warning_playlist_adding_leave">Leave Anyway</string>
     <string name="warning_song_remove_title">REMOVE SONG</string>
+    <string name="warning_song_remove_downloaded_title">REMOVE DOWNLOADED SONG</string>
     <string name="warning_album_songList_remove_title">REMOVE DOWNLOADED SONGS</string>
     <string name="warning_album_songList_remove_subtitle">This will remove all downloaded songs from the album. Are you sure you want to proceed?</string>
 

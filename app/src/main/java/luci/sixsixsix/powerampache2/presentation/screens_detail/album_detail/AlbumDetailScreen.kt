@@ -112,7 +112,7 @@ fun AlbumDetailScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     var infoVisibility by remember { mutableStateOf(false) }
     var playlistsDialogOpen by remember { mutableStateOf(AddToPlaylistOrQueueDialogOpen(false)) }
-    var showDeleteDownloadedSongsDialog by remember { mutableStateOf(false) }
+    var showDeleteAllDownloadedSongsDialog by remember { mutableStateOf(false) }
 
     var orientation by remember { mutableIntStateOf(Configuration.ORIENTATION_PORTRAIT) }
     val configuration = LocalConfiguration.current
@@ -184,15 +184,30 @@ fun AlbumDetailScreen(
     }
 
     // Delete all downloaded songs dialog
-    if(showDeleteDownloadedSongsDialog) {
+    if(showDeleteAllDownloadedSongsDialog) {
         EraseConfirmDialog(
-            onDismissRequest = { showDeleteDownloadedSongsDialog = false },
+            onDismissRequest = { showDeleteAllDownloadedSongsDialog = false },
             onConfirmation = {
-                showDeleteDownloadedSongsDialog = false
+                showDeleteAllDownloadedSongsDialog = false
                 mainViewModel.onEvent(MainEvent.OnDownloadedSongListDelete(songs))
             },
             dialogTitle = stringResource(id = R.string.warning_album_songList_remove_title),
             dialogText = stringResource(id = R.string.warning_album_songList_remove_subtitle)
+        )
+    }
+
+    var showDeleteFromDownloadsDialog by remember { mutableStateOf<Song?>(null) }
+    showDeleteFromDownloadsDialog?.let { songToRemove ->
+        EraseConfirmDialog(
+            onDismissRequest = {
+                showDeleteFromDownloadsDialog = null
+            },
+            onConfirmation = {
+                showDeleteFromDownloadsDialog = null
+                mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(songToRemove))
+            },
+            dialogTitle = stringResource(id = R.string.warning_song_remove_downloaded_title),
+            dialogText = "Delete ${songToRemove.name} from downloads?"
         )
     }
 
@@ -326,7 +341,7 @@ fun AlbumDetailScreen(
                                     mainViewModel.onEvent(MainEvent.OnDownloadSongs(songs))
                                 } else {
                                     // if entire album is downloaded, the button will delete instead.
-                                    showDeleteDownloadedSongsDialog = true
+                                    showDeleteAllDownloadedSongsDialog = true
                                 }
                                 AlbumInfoViewEvents.SHUFFLE_PLAY_ALBUM -> {
                                     viewModel.onEvent(AlbumDetailEvent.OnShufflePlaylistToggle)
@@ -368,7 +383,7 @@ fun AlbumDetailScreen(
                                             SongItemEvent.DOWNLOAD_SONG ->
                                                 mainViewModel.onEvent(MainEvent.OnDownloadSong(song))
                                             SongItemEvent.DELETE_DOWNLOADED_SONG ->
-                                                mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(song))
+                                                showDeleteFromDownloadsDialog = song
                                             SongItemEvent.SHOW_INFO ->
                                                 showSongInfoDialog = ShowInfoDialogOpen(isOpen = true, song = song)
                                             SongItemEvent.EXPORT_DOWNLOADED_SONG ->

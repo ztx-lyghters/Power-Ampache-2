@@ -61,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -76,11 +77,13 @@ import luci.sixsixsix.powerampache2.presentation.common.LikeButton
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialog
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialogOpen
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialogViewModel
+import luci.sixsixsix.powerampache2.presentation.dialogs.EraseConfirmDialog
 import luci.sixsixsix.powerampache2.presentation.dialogs.ShareDialog
 import luci.sixsixsix.powerampache2.presentation.dialogs.info.InfoDialogSong
 import luci.sixsixsix.powerampache2.presentation.navigation.Ampache2NavGraphs
 import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainEvent
 import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainViewModel
+import luci.sixsixsix.powerampache2.presentation.screens.queue.QueueEvent
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -138,6 +141,23 @@ fun SongDetailContent(
                 }
             )
         }
+    }
+
+    var showDeleteFromDownloadsDialog by remember { mutableStateOf<Song?>(null) }
+    showDeleteFromDownloadsDialog?.let { songToRemove ->
+        EraseConfirmDialog(
+            onDismissRequest = {
+                showDeleteFromDownloadsDialog = null
+            },
+            onConfirmation = {
+                showDeleteFromDownloadsDialog = null
+                mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(songToRemove))
+                // TODO BREAKING_RULE anti-pattern. verify the song is actually deleted
+                isOffline = false
+            },
+            dialogTitle = stringResource(id = R.string.warning_song_remove_downloaded_title),
+            dialogText = "Delete ${songToRemove.name} from downloads?"
+        )
     }
 
     var isImageScaleFit by remember { mutableStateOf(false) }
@@ -238,11 +258,13 @@ fun SongDetailContent(
                 tint = buttonsTint
             ) { event ->
                 when(event) {
-                    SongDetailButtonEvents.SHARE_SONG -> {
+                    SongDetailButtonEvents.SHARE_SONG ->
                         songToShare = song
-                    }
                     SongDetailButtonEvents.DOWNLOAD_SONG ->
                         mainViewModel.onEvent(MainEvent.OnDownloadSong(song))
+                    SongDetailButtonEvents.DELETE_DOWNLOADED_SONG -> {
+                        showDeleteFromDownloadsDialog = song
+                    }
                     SongDetailButtonEvents.ADD_SONG_TO_PLAYLIST_OR_QUEUE ->
                         playlistsDialogOpen = AddToPlaylistOrQueueDialogOpen(true, listOf(song))
                     SongDetailButtonEvents.GO_TO_ALBUM ->
@@ -261,11 +283,6 @@ fun SongDetailContent(
                         }
                     SongDetailButtonEvents.SHOW_INFO ->
                         infoDialogOpen = true
-                    SongDetailButtonEvents.DELETE_DOWNLOADED_SONG -> {
-                        mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(song = song))
-                        // TODO BREAKING_RULE anti-pattern. verify the song is actually deleted
-                        isOffline = false
-                    }
                 }
             }
         }
