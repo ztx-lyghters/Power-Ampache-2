@@ -72,6 +72,7 @@ data class Song(
     val averageRating: Float,
     val preciseRating: Float,
     val rating: Float,
+    var isAvailableOffline: Boolean = false,
 ): Comparable<Song>, Parcelable, AmpacheModel {
     override fun compareTo(other: Song): Int = mediaId.compareTo(other.mediaId)
 
@@ -88,6 +89,7 @@ data class Song(
             averageRating = Constants.ERROR_FLOAT,
             preciseRating = Constants.ERROR_FLOAT,
             rating = Constants.ERROR_FLOAT,
+            isAvailableOffline = true
         )
 
         fun mapSongs(songs: List<Song>) = LinkedHashMap<String, Song>().apply {

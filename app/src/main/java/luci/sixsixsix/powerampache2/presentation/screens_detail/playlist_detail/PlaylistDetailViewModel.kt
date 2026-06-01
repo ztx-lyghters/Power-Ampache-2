@@ -69,7 +69,7 @@ import luci.sixsixsix.powerampache2.domain.usecase.settings.LocalSettingsFlowUse
 import luci.sixsixsix.powerampache2.domain.usecase.settings.ToggleGlobalShuffleUseCase
 import luci.sixsixsix.powerampache2.domain.usecase.songs.IsSongAvailableOfflineUseCase
 import luci.sixsixsix.powerampache2.domain.usecase.songs.OfflineSongsFlow
-import luci.sixsixsix.powerampache2.presentation.common.songitem.SongWrapper
+import java.util.Collections.reverse
 import javax.inject.Inject
 
 @HiltViewModel
@@ -293,19 +293,11 @@ class PlaylistDetailViewModel @Inject constructor(
                     when(result) {
                         is Resource.Success -> {
                             result.data?.let { songs ->
-                                val songWrapperList = mutableListOf<SongWrapper>()
                                 songs.forEach { song ->
-                                    songWrapperList.add(
-                                        SongWrapper(
-                                        song = song,
-                                        isOffline = isSongAvailableOfflineUseCase(song)
-                                    )
-                                    )
+                                    song.isAvailableOffline = isSongAvailableOfflineUseCase(song)
                                 }
-                                state = state.copy(
-                                    songs = songWrapperList.apply {
-                                        if (state.sortMode == SortMode.DESC) { reverse() } }
-                                )
+                                if (state.sortMode == SortMode.DESC) { reverse(songs) }
+                                state = state.copy(songs = songs)
                             }
                         }
                         is Resource.Error ->
@@ -366,14 +358,10 @@ class PlaylistDetailViewModel @Inject constructor(
             when(result) {
                 is Resource.Success -> {
                     result.data?.let { songs ->
-                        val songWrapperList = mutableListOf<SongWrapper>()
                         songs.forEach { song ->
-                            songWrapperList.add(
-                                SongWrapper(song = song,
-                                isOffline = isSongAvailableOfflineUseCase(song))
-                            )
+                            song.isAvailableOffline = isSongAvailableOfflineUseCase(song)
                         }
-                        state = state.copy(songs = songWrapperList)
+                        state = state.copy(songs = songs)
                         L("PlaylistDetailViewModel.getRecentSongs size ${state.songs.size}")
                     }
                 }
@@ -397,16 +385,10 @@ class PlaylistDetailViewModel @Inject constructor(
                     when(result) {
                         is Resource.Success -> {
                             result.data?.let { songs ->
-                                val songWrapperList = mutableListOf<SongWrapper>()
                                 songs.forEach { song ->
-                                    songWrapperList.add(
-                                        SongWrapper(
-                                            song = song,
-                                            isOffline = isSongAvailableOfflineUseCase(song)
-                                        )
-                                    )
+                                    song.isAvailableOffline = isSongAvailableOfflineUseCase(song)
                                 }
-                                state = state.copy(songs = songWrapperList)
+                                state = state.copy(songs = songs)
                                 L("PlaylistDetailViewModel.getFlaggedSongs size ${state.songs.size}")
                             }
                             L( "PlaylistDetailViewModel.getFlaggedSongs size of network array ${result.networkData?.size}")
@@ -431,16 +413,10 @@ class PlaylistDetailViewModel @Inject constructor(
                     when(result) {
                         is Resource.Success -> {
                             result.data?.let { songs ->
-                                val songWrapperList = mutableListOf<SongWrapper>()
                                 songs.forEach { song ->
-                                    songWrapperList.add(
-                                        SongWrapper(
-                                            song = song,
-                                            isOffline = isSongAvailableOfflineUseCase(song = song)
-                                        )
-                                    )
+                                    song.isAvailableOffline = isSongAvailableOfflineUseCase(song)
                                 }
-                                state = state.copy(songs = songWrapperList)
+                                state = state.copy(songs = songs)
                                 L("PlaylistDetailViewModel.getFrequentSongs size ${state.songs.size}")
                             }
                             L( "PlaylistDetailViewModel.getFrequentSongs size of network array ${result.networkData?.size}")
@@ -465,16 +441,10 @@ class PlaylistDetailViewModel @Inject constructor(
                     when(result) {
                         is Resource.Success -> {
                             result.data?.let { songs ->
-                                val songWrapperList = mutableListOf<SongWrapper>()
                                 songs.forEach { song ->
-                                    songWrapperList.add(
-                                        SongWrapper(
-                                            song = song,
-                                            isOffline = isSongAvailableOfflineUseCase(song)
-                                        )
-                                    )
+                                    song.isAvailableOffline = isSongAvailableOfflineUseCase(song)
                                 }
-                                state = state.copy(songs = songWrapperList)
+                                state = state.copy(songs = songs)
                                 L("PlaylistDetailViewModel.getHighestSongs size ${state.songs.size}")
                             }
                             L( "PlaylistDetailViewModel.getHighestSongs size of network array ${result.networkData?.size}")

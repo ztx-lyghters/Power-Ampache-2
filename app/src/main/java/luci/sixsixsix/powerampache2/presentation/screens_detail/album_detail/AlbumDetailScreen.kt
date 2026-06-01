@@ -86,7 +86,6 @@ import luci.sixsixsix.powerampache2.presentation.screens.main.viewmodel.MainView
 import luci.sixsixsix.powerampache2.presentation.screens_detail.album_detail.components.AlbumDetailTopBar
 import luci.sixsixsix.powerampache2.presentation.screens_detail.album_detail.components.AlbumInfoSection
 import luci.sixsixsix.powerampache2.presentation.screens_detail.album_detail.components.AlbumInfoViewEvents
-import luci.sixsixsix.powerampache2.presentation.screens_detail.playlist_detail.PlaylistDetailsEditEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -368,8 +367,8 @@ fun AlbumDetailScreen(
                                 .fillMaxSize()
                         ) {
                             items(state.songs.size) { i ->
-                                val song = state.songs[i].song
-                                val isOffline = state.songs[i].isOffline
+                                val song = state.songs[i]
+                                val isOffline = state.songs[i].isAvailableOffline
                                 SongItem(
                                     song = song,
                                     isLandscape = isLandscape,

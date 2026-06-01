@@ -147,8 +147,8 @@ fun SongsListScreen(
                         state.songs.size,
                         //key = { i -> state.songs[i].mediaId }
                     ) { i ->
-                        val song = state.songs[i].song
-                        val isOffline = state.songs[i].isOffline
+                        val song = state.songs[i]
+                        val isOffline = state.songs[i].isAvailableOffline
                         SongItem(
                             song = song,
                             songItemEventListener = { event ->

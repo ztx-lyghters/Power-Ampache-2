@@ -43,6 +43,7 @@ import luci.sixsixsix.powerampache2.domain.usecase.artists.ArtistsByGenreUseCase
 import luci.sixsixsix.powerampache2.domain.usecase.artists.ArtistsUseCase
 import luci.sixsixsix.powerampache2.domain.usecase.playlists.PlaylistsUseCase
 import luci.sixsixsix.powerampache2.domain.usecase.settings.LocalSettingsFlowUseCase
+import luci.sixsixsix.powerampache2.domain.usecase.songs.IsSongAvailableOfflineUseCase
 import luci.sixsixsix.powerampache2.player.MusicPlaylistManager
 import javax.inject.Inject
 
@@ -55,7 +56,8 @@ class SearchViewModel @Inject constructor(
     private val playlistsUseCase: PlaylistsUseCase,
     private val songsRepository: SongsRepository,
     private val settingsFlow: LocalSettingsFlowUseCase,
-    private val playlistManager: MusicPlaylistManager
+    private val playlistManager: MusicPlaylistManager,
+    private val isSongAvailableOfflineUseCase: IsSongAvailableOfflineUseCase
 ) : ViewModel() {
     var state by mutableStateOf(SearchScreenState())
 
@@ -157,6 +159,9 @@ class SearchViewModel @Inject constructor(
             when (result) {
                 is Resource.Success ->
                     result.data?.let { songs ->
+                        songs.forEach { song ->
+                            song.isAvailableOffline = isSongAvailableOfflineUseCase(song)
+                        }
                         state = state.copy(songs = songs)
                     }
                 is Resource.Error ->

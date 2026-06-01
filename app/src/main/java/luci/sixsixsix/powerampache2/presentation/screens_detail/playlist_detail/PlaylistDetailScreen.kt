@@ -338,7 +338,7 @@ fun PlaylistDetailScreen(
                                     } else if (state.songs.isNotEmpty()) {
                                         if (!state.isGlobalShuffleOn) {
                                             mainViewModel.onEvent(
-                                                MainEvent.AddSongsToQueueAndPlay(state.songs[0].song, state.getSongList())
+                                                MainEvent.AddSongsToQueueAndPlay(state.songs[0], state.getSongList())
                                             )
                                         } else {
                                             mainViewModel.onEvent(
@@ -397,9 +397,8 @@ fun PlaylistDetailScreen(
                             itemsIndexed(
                                 items = state.songs,
                                 //key = { _, item -> item }
-                            ) { _, songWrapped ->
-                                val song = songWrapped.song
-                                val isOffline = songWrapped.isOffline
+                            ) { _, song ->
+                                val isOffline = song.isAvailableOffline
                                 SongItem(
                                     song = song,
                                     isLandscape = isLandscape,

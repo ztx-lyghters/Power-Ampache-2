@@ -50,6 +50,7 @@ import luci.sixsixsix.powerampache2.domain.AlbumsRepository
 import luci.sixsixsix.powerampache2.domain.SongsRepository
 import luci.sixsixsix.powerampache2.domain.errors.ErrorHandler
 import luci.sixsixsix.powerampache2.domain.models.Album
+import luci.sixsixsix.powerampache2.domain.models.Song
 import luci.sixsixsix.powerampache2.domain.models.settings.LocalSettings
 import luci.sixsixsix.powerampache2.domain.usecase.albums.AlbumFromIdUseCase
 import luci.sixsixsix.powerampache2.domain.usecase.artists.RecommendedArtistsUseCase
@@ -60,7 +61,6 @@ import luci.sixsixsix.powerampache2.domain.usecase.settings.OfflineModeFlowUseCa
 import luci.sixsixsix.powerampache2.domain.usecase.settings.ToggleGlobalShuffleUseCase
 import luci.sixsixsix.powerampache2.domain.usecase.songs.IsSongAvailableOfflineUseCase
 import luci.sixsixsix.powerampache2.domain.usecase.songs.OfflineSongsFlow
-import luci.sixsixsix.powerampache2.presentation.common.songitem.SongWrapper
 import javax.inject.Inject
 
 @HiltViewModel
@@ -204,9 +204,9 @@ class AlbumDetailViewModel @Inject constructor(
             }
     }
 
-    private fun isAlbumDownloaded(songs: List<SongWrapper>): Boolean {
+    private fun isAlbumDownloaded(songs: List<Song>): Boolean {
         songs.forEach {
-            if (!it.isOffline) return false
+            if (!it.isAvailableOffline) return false
         }
         return true
     }
@@ -219,16 +219,12 @@ class AlbumDetailViewModel @Inject constructor(
                     when (result) {
                         is Resource.Success -> {
                             result.data?.let { songs ->
-                                val songWrapperList = mutableListOf<SongWrapper>()
                                 songs.forEach { song ->
-                                    songWrapperList.add(
-                                        SongWrapper(
-                                        song = song,
-                                        isOffline = isSongAvailableOfflineUseCase(song)
-                                    )
-                                    )
+                                    song.isAvailableOffline = isSongAvailableOfflineUseCase(song)
                                 }
-                                state = state.copy(songs = songWrapperList, isAlbumDownloaded = isAlbumDownloaded(songWrapperList))
+                                state = state.copy(
+                                    songs = songs,
+                                    isAlbumDownloaded = isAlbumDownloaded(songs))
                                 L("AlbumDetailViewModel.getSongsFromAlbum size", result.data?.size, "network", result.networkData?.size)
                             }
                         }
