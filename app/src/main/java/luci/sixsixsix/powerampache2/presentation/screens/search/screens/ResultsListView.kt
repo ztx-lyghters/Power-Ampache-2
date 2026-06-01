@@ -88,7 +88,6 @@ fun ResultsListView(
                 items(megaList) { item ->
                     AmpacheListItem(
                         item = item,
-                        isSongDownloaded = false,
                         songItemEventListener = {
                             onSongItemEvent(
                                 song = (item as Song),

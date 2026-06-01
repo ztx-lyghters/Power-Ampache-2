@@ -97,7 +97,6 @@ fun <T: AmpacheModel> AmpacheListItem(
     item: T,
     songItemEventListener: (songItemEvent: SongItemEvent) -> Unit,
     modifier: Modifier = Modifier,
-    isSongDownloaded: Boolean = false,
     showDownloadedSongMarker: Boolean = false,
     enableSwipeToRemove: Boolean = false,
     onRemove: (AmpacheModel) -> Unit = {},
@@ -109,6 +108,7 @@ fun <T: AmpacheModel> AmpacheListItem(
     var rating: Int = ERROR_INT
     var showAmpacheBadge = false
     var showPublicBadge = false
+    var isSongDownloaded = false
 
     when(item) {
         is Song -> {
@@ -120,6 +120,7 @@ fun <T: AmpacheModel> AmpacheListItem(
             )
             isFavourite = item.flag == 1
             rating = item.rating.toInt()
+            isSongDownloaded = item.isAvailableOffline
         }
         is Album -> {
             imageUrl = item.artUrl

@@ -227,6 +227,9 @@ class SearchViewModel @Inject constructor(
             when (result) {
                 is Resource.Success ->
                     result.data?.let { songs ->
+                        songs.forEach { song ->
+                            song.isAvailableOffline = isSongAvailableOfflineUseCase(song)
+                        }
                         state = state.copy(songs = songs)
                     }
                 is Resource.Error ->
