@@ -105,7 +105,7 @@ class PlaylistDetailViewModel @Inject constructor(
                 state = state.copy(
                     isNotStatPlaylist = PlaylistDetailState.isNotStatPlaylist(playlist),
                     isGeneratedOrSmartPlaylist = PlaylistDetailState.isGeneratedOrSmartPlaylist(playlist),
-                    isUserOwner = user.username.lowercase() == playlist.owner?.lowercase()
+                    isUserOwner = user.username.lowercase() == playlist.owner?.lowercase() || user.access >= 100
                 )
                 playlist
             }.flatMapConcat { playlist ->
