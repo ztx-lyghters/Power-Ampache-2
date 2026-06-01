@@ -36,14 +36,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import luci.sixsixsix.powerampache2.R
 import luci.sixsixsix.powerampache2.domain.models.Song
 import luci.sixsixsix.powerampache2.presentation.destinations.AlbumDetailScreenDestination
 import luci.sixsixsix.powerampache2.presentation.destinations.PlaylistDetailScreenDestination
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialog
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialogOpen
 import luci.sixsixsix.powerampache2.presentation.dialogs.AddToPlaylistOrQueueDialogViewModel
+import luci.sixsixsix.powerampache2.presentation.dialogs.EraseConfirmDialog
+import luci.sixsixsix.powerampache2.presentation.dialogs.ShowEraseConfirmDialog
 import luci.sixsixsix.powerampache2.presentation.dialogs.info.InfoDialogSong
 import luci.sixsixsix.powerampache2.presentation.dialogs.info.ShowInfoDialogOpen
 import luci.sixsixsix.powerampache2.presentation.navigation.Ampache2NavGraphs
@@ -88,6 +92,21 @@ fun SearchResultsScreen(
                 }
             )
         }
+    }
+
+    var showDeleteFromDownloadsDialog by remember { mutableStateOf(ShowEraseConfirmDialog(false)) }
+    if (showDeleteFromDownloadsDialog.isOpen && showDeleteFromDownloadsDialog.song != null) {
+        EraseConfirmDialog(
+            onDismissRequest = {
+                showDeleteFromDownloadsDialog = ShowEraseConfirmDialog(false)
+            },
+            onConfirmation = {
+                showDeleteFromDownloadsDialog = ShowEraseConfirmDialog(false)
+                mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(showDeleteFromDownloadsDialog.song!!))
+            },
+            dialogTitle = stringResource(id = R.string.warning_song_remove_downloaded_title),
+            dialogText = "Delete ${showDeleteFromDownloadsDialog.song!!.name} from downloads?"
+        )
     }
 
     var showSongInfoDialog by remember { mutableStateOf(ShowInfoDialogOpen(false)) }
@@ -138,6 +157,9 @@ fun SearchResultsScreen(
             },
             onOpenPlaylistDialog = {
                 playlistsDialogOpen = AddToPlaylistOrQueueDialogOpen(true, it)
+            },
+            onShowDeleteFromDownloadsDialog = {
+                showDeleteFromDownloadsDialog = ShowEraseConfirmDialog(true, it)
             },
             onShowSongInfo = {
                 showSongInfoDialog = ShowInfoDialogOpen(true, it)

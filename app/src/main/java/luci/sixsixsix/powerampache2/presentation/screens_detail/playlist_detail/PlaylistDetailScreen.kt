@@ -118,7 +118,7 @@ fun PlaylistDetailScreen(
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = viewModel.state.isRefreshing)
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     var infoVisibility by remember { mutableStateOf(true) }
-    var showDeleteSongDialog by remember { mutableStateOf<Song?>(null) }
+    var showDeleteSongFromPlaylistDialog by remember { mutableStateOf<Song?>(null) }
     var isEditMode by remember { mutableStateOf(false) }
 
     var randomBackgroundTop by remember { mutableStateOf("") }
@@ -153,18 +153,33 @@ fun PlaylistDetailScreen(
         }
     }
 
-    showDeleteSongDialog?.let { songToRemove ->
+    showDeleteSongFromPlaylistDialog?.let { songToRemove ->
         EraseConfirmDialog(
             onDismissRequest = {
-                showDeleteSongDialog = null
+                showDeleteSongFromPlaylistDialog = null
                 viewModel.onEditEvent(PlaylistDetailsEditEvent.OnRemoveSongDismiss)
             },
             onConfirmation = {
-                showDeleteSongDialog = null
+                showDeleteSongFromPlaylistDialog = null
                 viewModel.onEditEvent(PlaylistDetailsEditEvent.OnRemoveSong(songToRemove))
             },
             dialogTitle = stringResource(id = R.string.warning_song_remove_title),
             dialogText = "Delete ${songToRemove.name} from playlist \n${currentPlaylistState.name}?"
+        )
+    }
+
+    var showDeleteFromDownloadsDialog by remember { mutableStateOf<Song?>(null) }
+    showDeleteFromDownloadsDialog?.let { songToRemove ->
+        EraseConfirmDialog(
+            onDismissRequest = {
+                showDeleteFromDownloadsDialog = null
+            },
+            onConfirmation = {
+                showDeleteFromDownloadsDialog = null
+                mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(songToRemove))
+            },
+            dialogTitle = stringResource(id = R.string.warning_song_remove_downloaded_title),
+            dialogText = "Delete ${songToRemove.name} from downloads?"
         )
     }
 
@@ -400,7 +415,7 @@ fun PlaylistDetailScreen(
                                             SongItemEvent.DOWNLOAD_SONG ->
                                                 mainViewModel.onEvent(MainEvent.OnDownloadSong(song))
                                             SongItemEvent.DELETE_DOWNLOADED_SONG ->
-                                                mainViewModel.onEvent(MainEvent.OnDownloadedSongDelete(song))
+                                                showDeleteFromDownloadsDialog = song
                                             SongItemEvent.SHOW_INFO ->
                                                 showSongInfoDialog = ShowInfoDialogOpen(
                                                     isOpen = true, song = song)
@@ -434,7 +449,7 @@ fun PlaylistDetailScreen(
                                     isEditSongSelected = viewModel.isEditSongSelected(song),
                                     isEditEnabled = viewModel.state.isLoading.not() && viewModel.state.isPlaylistRemoveLoading.not(),
                                     onRemove = { songToRemove ->
-                                        showDeleteSongDialog = songToRemove
+                                        showDeleteSongFromPlaylistDialog = songToRemove
                                     },
                                     onRightToLeftSwipe = {
                                         playlistsDialogOpen = AddToPlaylistOrQueueDialogOpen(true, listOf(song))
